@@ -1,0 +1,31 @@
+<div class="comments heading">
+    <h3>Comments</h3>
+    @foreach($comments as $comment)
+        <div class="media">
+            <div class="media-body">
+                <table class="table">
+                    <tr>
+                        <td>
+                <h4 class="media-heading">	{{ $comment->korisnicko_ime }}</h4>
+                <h6><label>{{ date("F j, Y", strtotime($comment->created_at)) }}</label></h6>
+                <p> 
+                    <span id="comment{{$comment->id}}">{{ $comment->content }}</span></br>
+                    @if(session('user'))
+                        @if(session()->get('user')[0]->id == $comment->user_id || session()->get('user')[0]->naziv == 'admin')
+                            <a href="{{ route("deleteComment", ['id' => $comment->id]) }}"><i class="fa fa-trash">Obrisi</i></a>
+                        @endif
+                        @if(session()->get('user')[0]->id == $comment->user_id)
+                                 <a href="#comments"><i class="fa fa-edit" onclick="editComment({{ $comment->id }})">Izmeni</i></a>
+                        @endif
+                    @endif
+                </p>
+                        </td>
+                </tr>
+                </table>
+            </div>
+            <div class="media-right">
+     
+            </div>
+        </div>
+    @endforeach
+</div>
