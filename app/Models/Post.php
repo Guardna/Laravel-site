@@ -3,14 +3,13 @@
 namespace App\Models;
 use Illuminate\Support\Facades\DB;
 
-
 class Post {
 	public $id;
 	public $naslov;
 	public $sadrzaj;
 	public $korisnik_id;
 	public $slika_id;
-        private $table = 'post';
+	private $table = 'post';
 
 	public function getAll(){
 		$rezultat = DB::table('post')
@@ -22,7 +21,7 @@ class Post {
 					->get();
 		return $rezultat;
 	}
-     
+
 
 	public function save() {
 		$rezultat = DB::table('post')->insert([
@@ -32,7 +31,11 @@ class Post {
 			'created_at' => time(),
 			'slika_id' => $this->slika_id
 		]);
-		return $rezultat;
+		$log = DB::table('logs')->insert([
+			'user' =>session()->get('user')[0]->korisnicko_ime,
+			'action' => 'Made new post '.$this->naslov,
+			'time' => time()
+		]);
 	}
       
     
@@ -47,7 +50,6 @@ class Post {
                         'k.korisnicko_ime as komentarKorisnik',
                         'comments.post_id as comments')
                 ->join('slika','slika.id','=','post.slika_id')
-                // Komentari se mogu dohvatati i posebnim upitom
                 ->join('korisnik','korisnik.id','=','post.korisnik_id')
                 ->leftJoin('comments','comments.post_id','=','post.id')
                 ->leftJoin('korisnik AS k','k.id','=','comments.user_id')
@@ -55,11 +57,18 @@ class Post {
                 ->first();
         return $rezultat;
     }
+
+    public function getp() {
+	$rezultat = DB::table('post')
+				->select('*')
+				->where('id',$this->id)
+				->first();
+	return $rezultat;
+}
     public function update(){
 		$data = [
 			'naslov' => $this->naslov,
 			'sadrzaj' => $this->sadrzaj,
-			'alt' => $this->alt,
                         'updated_at' => time(),
 		];
 		
@@ -69,9 +78,12 @@ class Post {
 
 		$rez = DB::table('post')
 		->where('id',$this->id)
-				->update($data)
-				;
-		return $rez;
+		->update($data);
+		$log = DB::table('logs')->insert([
+			'user' =>session()->get('user')[0]->korisnicko_ime,
+			'action' => 'Updated post '.$this->naslov,
+			'time' => time()
+		]);
                 
 	}
         
@@ -80,6 +92,10 @@ class Post {
 		$rezultat = DB::table('post')
 					->where('id', $this->id)
 					->delete();
+		$log = DB::table('logs')->insert([
+		'user' =>session()->get('user')[0]->korisnicko_ime,
+		'action' => 'Deleted post '.$this->id,
+		'time' => time()]);
 		return $rezultat;
 	}
         public function deleted(){
@@ -91,9 +107,9 @@ class Post {
         public function getPictureId($postId)
     {
         return \DB::table($this->table)
-            ->where('slika_id', $postId->slika_id)
-            ->select("slika.id as id")
-            ->get()->first()->id;
+            ->where('id', $postId)
+            ->select("slika_id")
+            ->get()->first();
     }
 
 }

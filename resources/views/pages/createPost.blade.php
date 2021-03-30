@@ -22,8 +22,9 @@
                 @endforeach
               @endif
             @endisset
-            <form action="{{ asset('/posts/store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ (isset($post))? asset('/posts/update/'.$post->postId) : asset('/posts/store') }}" method="POST" enctype="multipart/form-data">
               {{ csrf_field() }}
+               {{ method_field('PUT')}}  
               <div class="form-group">
                 <label>Title:</label>
                 <input type="text" name="title" class="form-control" value="{{ (isset($post))? $post->naslov : old('naslov') }}"/>

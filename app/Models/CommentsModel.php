@@ -62,7 +62,6 @@ class CommentsModel
     private function canUserDeleteComment($commentId)
     {
         $comment = $this->find($commentId);
-        //Samo ukoliko je korisnik admin ili komentar odgovara tekucem ulogovanom korisniku, dozvoljeno je brisanje komentara
         return $comment ? (session()->get('user')[0]->naziv == 'admin') || ($comment->user_id == session()->get('user')[0]->id) : false;
     }
 }

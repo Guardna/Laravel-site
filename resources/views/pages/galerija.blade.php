@@ -22,7 +22,7 @@
             <div class="row">
             @isset($posts)
             @foreach($posts as $post)
-            <div class="col-sm-3" style="height: 200px">
+            <div class="col-sm-3" >
             <a class="image-popup-no-margins" href="{{ asset('/').$post->putanja }}"><img src="{{ asset('/').$post->putanja }}" class="img img-thumbnail" alt="{{ $post->alt }}"></a>
             <br>
             <center><strong>{{ $post->alt }}</strong></center>

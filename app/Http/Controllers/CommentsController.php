@@ -8,8 +8,11 @@ use Illuminate\Http\Request;
 
 class CommentsController extends Controller
 {
+    
     public function postComment(Request $request, $postId)
     {
+        switch($request->akcija) {
+            case 'post': 
         if ($request->get("content")) {
             $commentsModel = new CommentsModel();
             $commentsModel->content = $request->get("content");
@@ -24,19 +27,26 @@ class CommentsController extends Controller
 
         }
         return redirect()->back()->with('warning', "Poruka ne sme biti prazna.");
+        break;
+    }
+        
     }
 
     public function editComment(Request $request, $commentId)
     {
+        switch($request->akcija) {
+            case 'edit': 
         $commentModel = new CommentsModel();
         try {
-            $commentModel->content = $request->get('content');
+            $commentModel->content = $request->get('content1');
             $commentModel->update($commentId);
-            return response(null, 200);
+            return redirect()->back()->with('success', "Komentar uspesno izmenjen.");
         } catch (\Exception $e) {
             \Log::error("Greska pri izmeni komentara " . $e->getMessage());
-            return response(null, 422);
+            return redirect()->back()->with('warning', "Doslo je do greske na serveru.");
         }
+        break;
+    }
 
     }
 

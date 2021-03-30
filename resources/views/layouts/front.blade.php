@@ -11,11 +11,10 @@
     <title> Film Kritike | @yield('title') </title>
 
     @section('appendCss')
-    <!-- Bootstrap core CSS -->
+ 
     <link href="{{ asset('/') }}vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     @show
-    
-    
+
 <script src="{{ asset('/') }}vendor/jquery/jquery.min.js"></script>
 <link rel="stylesheet" href="{{ asset('/') }}js/Popup/dist/magnific-popup.css">
 <script src="{{ asset('/') }}js/provera.js"></script>
@@ -46,13 +45,13 @@
 			closeOnContentClick: true,
 			closeBtnInside: false,
 			fixedContentPos: true,
-		mainClass: 'mfp-no-margins mfp-with-zoom', // class to remove default margin from left and right side
+		mainClass: 'mfp-no-margins mfp-with-zoom', 
 		image: {
 			verticalFit: true
 		},
 		zoom: {
 			enabled: true,
-			duration: 300 // don't foget to change the duration also in CSS
+			duration: 300 
 		}
 	});
  
@@ -79,7 +78,7 @@
             <div class="alert alert-success">{{ session('success') }} </div>
           @endempty
         </div>
-        <!-- MESTO ZA SADRZAJ KOJI SE MENJA U ZAVISNOSTI OD STRANICE-->
+     
         @yield('content')
 
         @include('components.sidebar')
@@ -93,7 +92,7 @@
 	
 	
     @section('appendJavascript')
-    <!-- Bootstrap core JavaScript -->
+
    
     <script src="{{ asset('/') }}vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset("js/ajax.js") }}"></script>

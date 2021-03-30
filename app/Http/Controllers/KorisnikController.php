@@ -66,17 +66,16 @@ class KorisnikController extends Controller {
 		
 		$slika = $request->file('slika');
                
-		$tmp_putanja = $slika->getPathName(); // tmp putanja
-		$ekstenzija = $slika->getClientOriginalExtension(); // vraca: jpg, png - bez .
+		$tmp_putanja = $slika->getPathName(); 
+		$ekstenzija = $slika->getClientOriginalExtension(); 
 		$ime_fajla = time().'.'.$ekstenzija;
 		$putanja = 'images/'.$ime_fajla;
 		
-		$putanja_server = ($putanja); // kao sto je asset potreban u view, tako je ovde potrebna metoda public_path() da bi se dohvatila puna putanja do foldera images
+		$putanja_server = ($putanja);
 
 		try {
 			File::move($tmp_putanja, $putanja_server);
 
-			// unos u bazu
 
 			$korisnik = new Korisnik();
 			$korisnik->korisnicko_ime = $korisnicko_ime;
@@ -85,7 +84,6 @@ class KorisnikController extends Controller {
 			$korisnik->uloga_id = $uloga_id;
 
 			$rez = $korisnik->save();
-			// echo $rez;
 			if($rez == 1){
 				return redirect('/users')->with('message','Uspesan unos!');
 			}
@@ -120,17 +118,15 @@ class KorisnikController extends Controller {
 		
 		$slika = $request->file('slika');
                
-		$tmp_putanja = $slika->getPathName(); // tmp putanja
-		$ekstenzija = $slika->getClientOriginalExtension(); // vraca: jpg, png - bez .
+		$tmp_putanja = $slika->getPathName();
+		$ekstenzija = $slika->getClientOriginalExtension(); 
 		$ime_fajla = time().'.'.$ekstenzija;
 		$putanja = 'images/'.$ime_fajla;
 		
-		$putanja_server = ($putanja); // kao sto je asset potreban u view, tako je ovde potrebna metoda public_path() da bi se dohvatila puna putanja do foldera images
-
+		$putanja_server = ($putanja);
 		try {
 			File::move($tmp_putanja, $putanja_server);
 
-			// unos u bazu
 
 			$korisnik = new Korisnik();
 			$korisnik->korisnicko_ime = $korisnicko_ime;
@@ -139,7 +135,7 @@ class KorisnikController extends Controller {
 			$korisnik->uloga_id = $uloga_id;
 
 			$rez = $korisnik->save();
-			// echo $rez;
+		
 			if($rez == 1){
 				return redirect('/register')->with('message','Uspesan unos!');
 			}
@@ -165,13 +161,13 @@ class KorisnikController extends Controller {
 		$korisnik->lozinka = $lozinka;
 		$korisnik->uloga_id = $uloga_id;
 
-		if(!empty($slika)){ // ako je uploadovana slika
+		if(!empty($slika)){ 
 			
-			// brisanje stare slike sa servera 
+		
 			$korisnik_to_update = $korisnik->get();
 			File::delete($korisnik_to_update->slika);
 
-			// upload nove slike 
+		
 			$tmp_putanja = $slika->getPathName();
 			$ime_fajla = time().'.'.$slika->getClientOriginalExtension();
 			$putanja = 'images/'.$ime_fajla;
@@ -184,7 +180,7 @@ class KorisnikController extends Controller {
 
 		$rez = $korisnik->update();
 		
-		if($rez == 1){ // ako je uspeo update
+		if($rez == 1){ 
 			return redirect('/users')->with('message','Uspesan update!');
 		}
 		else {
@@ -196,7 +192,6 @@ class KorisnikController extends Controller {
 		$korisnik = new Korisnik();
 		$korisnik->id = $id;
 
-		// brisanje stare slike sa servera 
 		$korisnik_to_update = $korisnik->get();
 		File::delete($korisnik_to_update->slika);
 

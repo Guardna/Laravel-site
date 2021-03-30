@@ -21,13 +21,12 @@ class PostController extends Controller {
     }
 
 	public function create(){
-		// 1 - Prikaz formulara
+
 		return view('pages.createPost', $this->data);
 	}
 
 	public function store(Request $request) {
 
-		// 2 - Validacija unosa
 
 		$rules = [
 			'title' => 'regex:/^[A-Z][a-z]+(\s[\w\d\-]+)*$/',
@@ -37,18 +36,12 @@ class PostController extends Controller {
 		];
 		$custom_messages = [
 			'required' => 'Polje :attribute je obavezno!',
-			'title.regex' => 'Polje title nije u ispravnom formatu!',
+			'title.regex' => 'Polje title treba da pocne velikim slovom!',
 			'max' => 'Fajl ne sme biti veci od :max KB.',
 			'mimes' => 'Dozvoljeni formati su: :values.'
 		];
 		$request->validate($rules, $custom_messages);
 		
-		/*
-			 Kod ce se dalje izvrsavati jedino ako prodje validacija!
-		*/
-
-
-		// 3 - Dohvatanje informacija o slici
 
 		$photo = $request->file('photo');
 		$extension = $photo->getClientOriginalExtension();
@@ -59,40 +52,39 @@ class PostController extends Controller {
 		$new_path = ($folder).$file_name;
 
 		try {
-			// 4 - Upload slike na server
+		
 
 			File::move($tmp_path, $new_path);
 
-			// 5 - Unos slike u bazu
+	
 
 			$slika = new Slika();
 			$slika->alt = trim($request->get('alt'));
 			$slika->putanja = 'images/'.$file_name;
 			$slika_id = $slika->save();
 
-			// 6 - Unos posta u bazu
+	
 			$post = new Post();
 			$post->naslov = $request->get('title');
 			$post->sadrzaj = $request->get('body');
-                        $post->korisnik_id = session()->get('user')[0]->id;
+            $post->korisnik_id = session()->get('user')[0]->id;
 			$post->slika_id = $slika_id;
 			$post->save();
 
-			// Ako se ne desi nijedan Exception - otici ce na pocetnu stranu!
 			return redirect('/')->with('success','Uspesno ste dodali post i sliku!');
 		}
-		catch(\Illuminate\Database\QueryException $ex){ // greske u upitu
+		catch(\Illuminate\Database\QueryException $ex){ 
 			\Log::error($ex->getMessage());
 			return redirect()->back()->with('error','Greska pri dodavanju posta u bazu!');
 		}
-		catch(\Symfony\Component\HttpFoundation\File\Exception\FileException $ex) { // greske sa fajlom
+		catch(\Symfony\Component\HttpFoundation\File\Exception\FileException $ex) { 
 			\Log::error('Problem sa fajlom!! '.$ex->getMessage());
 			return redirect()->back()->with('error','Greska pri dodavanju slike!');
 		}
 		catch(\ErrorException $ex) { 
 			\Log::error('Problem sa fajlom!! '.$ex->getMessage());
 			return redirect()->back()->with('error','Desila se greska..');
-		} 
+		}
 	}
         public function postshow($id = null){
 		$post = new Post();
@@ -106,11 +98,11 @@ class PostController extends Controller {
 		return view('pages.createPost', $this->data);
 	}
         
-        public function update($id, Request $request) {
+        public function update(Request $request,$id) {
                 $rules = [
 			'title' => 'regex:/^[A-Z][a-z]+(\s[\w\d\-]+)*$/',
 			'body' => 'required',
-			'photo' => 'required|mimes:jpg,jpeg,png,gif|max:3000',
+			'photo' => 'mimes:jpg,jpeg,png,gif|max:3000',
 			'alt' => 'required'
 		];
 		$custom_messages = [
@@ -122,56 +114,48 @@ class PostController extends Controller {
 		$request->validate($rules, $custom_messages);
 
 		
-                $oldPictureId = null;
-               
-            
+            $oldPictureId = null;
+			
+			$photo = $request->file('photo');
             $post = new post();
             $post->id = $id;
-            $post->title = $request->get('title');
-            $post->body = $request->get('body');
-            $post->alt =trim($request->get('alt'));
-            try {
-                $post->update($id);
-
-                try {
-                    if($oldPictureId) {
-                        $slika = new Slika();
-                        $photo = $slika->find($oldPictureId);
-                        unlink(($photo->putanja));
-                        $slika->delete($oldPictureId);
-                    }
-                } catch(\Exception $e) {
-                    \Log::error("Greska pri brisanju slike:" . $e->getMessage());
-                }
-
-                //Brisanje prethodne slike i fizicki i iz baze, ako dodje do greske, ne treba obavestiti korisnika
-                return redirect(route('/posts'))->with("success", "Post successfully edited!");
-            } catch (QueryException $e) {
-                \Log::error("Greska pri update-u objave: " . $e->getMessage());
-                return redirect()->back()->with("error", "An error occurred, please try again later");
-            }
-             if ($request->hasFile('photo')){ // ako je uploadovana slika
+            $post->naslov = $request->get('title');
+            $post->sadrzaj = $request->get('body');
+			$post->slika_id=$post->get($id)->slika_id;
+			
 			$oldPictureId = $post->getPictureId($id);
-                        try{
-                            $photo = $request->file('photo');
-                            $folder = ('images/');
-                            $extension = $photo->getClientOriginalExtension();
-                            $file_name = time().".".$extension;
-                            $photo->move($folder, $file_name);
-                            
-                            $slika = new Slika();
-                            $slika->putanja = 'images/' . $file_name;
-                            $slika->alt = $request->get('alt');
-                            $this->id = $slika->save();
+		
+			if (!empty($photo)){ 
 
-                            
-                        }catch (QueryException $e) {
-                \Log::error("Greska pri update-u objave: " . $e->getMessage());
-            } catch (FileException $e) {
-                \Log::error("Greska pri update-u objave u dodavanju slike: " . $e->getMessage());
-            }
-	       }
-  
+							try{	
+
+								$rezz=$post->deleted();			
+								$folder = ('images/');
+								$extension = $photo->getClientOriginalExtension();
+								$file_name = time().".".$extension;
+								$photo->move($folder, $file_name);
+								
+								$slika = new Slika();
+								$slika->putanja = 'images/' . $file_name;
+								$slika->alt = trim($request->get('alt'));
+								$slika_id = $slika->save();
+								$post->slika_id = $slika_id;
+	
+								
+							}catch (QueryException $e) {
+					\Log::error("Greska pri update-u objave: " . $e->getMessage());
+				} catch (FileException $e) {
+					\Log::error("Greska pri update-u objave u dodavanju slike: " . $e->getMessage());
+				}
+			   }
+                $rez=$post->update();
+
+				if($rez == 1){
+				return redirect('/posts')->with("success", "Post successfully edited!");
+			}else {
+				return redirect('/posts')->with('message','Greska pri update-u!');
+			}
+
   
             }
         

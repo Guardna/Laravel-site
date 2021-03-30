@@ -8,6 +8,17 @@
               </div>
             </div>
           </div>
+          <form action="{{ route('search') }}" method="GET">
+          {{ csrf_field() }}
+          <div class="card my-4">
+            <h5 class="card-header"><input type="text" id="search" name="search" class="form-control"/></h5>
+            <div class="card-body">
+              <div class="input-group">
+              <input type="submit" name="btnSearch" value="Search" class="btn btn-primary"/>
+              </div>
+            </div>
+          </div>
+          </form>
             @if(!session()->has('user'))
           <div class="card my-4">
             <h5 class="card-header">Login</h5>
@@ -60,6 +71,8 @@
                 <a href="{{ asset('/users') }}" class="btn btn-warning">Upravljanje korisnicima</a>
                 <br/> <br/>
                 <a href="{{ asset('/roles') }}" class="btn btn-warning">Upravljanje ulogama</a>
+                <br/> <br/>
+                <a href="{{ asset('/logs') }}" class="btn btn-warning">Logovi</a>
                 @endif
                 @if(session()->get('user')[0]->naziv != 'admin')
                 <a href="{{ asset('/posts/create') }}" class="btn btn-warning">Create/Change post</a>

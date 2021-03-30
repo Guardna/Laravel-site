@@ -22,25 +22,42 @@ class Uloga {
 	}
 
 	public function save(){
-		return DB::table($this->table)
+		$rez= DB::table($this->table)
 			->insert([
 				'naziv' => $this->naziv
 			]);
+			$log = DB::table('logs')->insert([
+				'user' =>session()->get('user')[0]->korisnicko_ime,
+				'action' => 'Added Uloga '.$this->naziv,
+				'time' => time()
+			]);
+		return $rez;
 	}
 
 	public function update(){
-		return DB::table($this->table)
+		$rez=DB::table($this->table)
 			->where('id', $this->id)
 			->update([
 				'naziv' => $this->naziv
 			]);
+			$log = DB::table('logs')->insert([
+				'user' =>session()->get('user')[0]->korisnicko_ime,
+				'action' => 'Updated Uloga '.$this->naziv,
+				'time' => time()
+			]);
+		return $rez;
 	}
 
 	public function delete(){
-		return DB::table($this->table)
+		$rez=DB::table($this->table)
 			->where('id', $this->id)
-			->delete()
-		;
+			->delete();
+			$log = DB::table('logs')->insert([
+				'user' =>session()->get('user')[0]->korisnicko_ime,
+				'action' => 'Deleted Uloga '.$this->id,
+				'time' => time()
+			]);
+		return $rez;
 	}
 
 

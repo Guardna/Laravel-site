@@ -8,17 +8,18 @@
                         <td>
                 <h4 class="media-heading">	{{ $comment->korisnicko_ime }}</h4>
                 <h6><label>{{ date("F j, Y", strtotime($comment->created_at)) }}</label></h6>
-                <p> 
-                    <span id="comment{{$comment->id}}">{{ $comment->content }}</span></br>
+                <span id="comment{{$comment->id}}"> 
+                    <span id="kom{{$comment->id}}">{{ $comment->content }}</span></br>
                     @if(session('user'))
                         @if(session()->get('user')[0]->id == $comment->user_id || session()->get('user')[0]->naziv == 'admin')
                             <a href="{{ route("deleteComment", ['id' => $comment->id]) }}"><i class="fa fa-trash">Obrisi</i></a>
                         @endif
                         @if(session()->get('user')[0]->id == $comment->user_id)
-                                 <a href="#comments"><i class="fa fa-edit" onclick="editComment({{ $comment->id }})">Izmeni</i></a>
+                                 <a href="#comment{{$comment->id}}"><i class="fa fa-edit" onclick="editComment({{ $comment->id }},{{ $singlePost->postId}})">Izmeni</i></a>
                         @endif
                     @endif
-                </p>
+                    <span id="#comments"></span>
+                </span>
                         </td>
                 </tr>
                 </table>

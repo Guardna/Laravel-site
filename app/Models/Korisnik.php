@@ -36,6 +36,10 @@ class Korisnik
 						'lozinka' => md5($this->lozinka)
 					])
 					->first();
+		$log = DB::table('logs')->insert([
+		'user' =>$this->korisnicko_ime,
+		'action' => 'Login Korisnik '.$this->korisnicko_ime,
+		'time' => time()]);
 		return $rezultat;
 	}
 
@@ -45,8 +49,11 @@ class Korisnik
 			'lozinka' => md5($this->lozinka),
 			'slika' => $this->slika,
 			'uloga_id' => $this->uloga_id,
-                        'created_at' => time()
-		]);
+						'created_at' => time()]);
+		$log = DB::table('logs')->insert([
+		'user' =>$this->korisnicko_ime,
+		'action' => 'Added Korisnik '.$this->korisnicko_ime,
+		'time' => time()]);
 		return $rez;
 	}
 
@@ -58,7 +65,7 @@ class Korisnik
                         'updated_at' => time(),
 		];
 		
-		if(!empty($this->slika)){ // ako je upload-ovana slika
+		if(!empty($this->slika)){ 
 			$data['slika'] = $this->slika;
 		}
 
@@ -66,6 +73,10 @@ class Korisnik
 		->where('id',$this->id)
 				->update($data)
 				;
+		$log = DB::table('logs')->insert([
+		'user' =>session()->get('user')[0]->korisnicko_ime,
+		'action' => 'Updated Korisnik '.$this->korisnicko_ime,
+		'time' => time()]);
 		return $rez;
 	}
 
@@ -73,6 +84,10 @@ class Korisnik
 		$rezultat = DB::table('korisnik')
 					->where('id', $this->id)
 					->delete();
+		$log = DB::table('logs')->insert([
+		'user' =>session()->get('user')[0]->korisnicko_ime,
+		'action' => 'Deleted Korisnik '.$this->id,
+		'time' => time()]);
 		return $rezultat;
 	}
 }

@@ -40,6 +40,8 @@
 
           <!-- Comments Form -->
           @if(session()->get('user'))
+
+
           <div class="card my-4">
             <h5 class="card-header">Leave a Comment:</h5>
             <div class="card-body">
@@ -48,7 +50,7 @@
                 <div class="form-group">
                   <textarea class="form-control" rows="3" name="content"></textarea>
                 </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" name="akcija" value="post" class="btn btn-primary">Submit</button>
               </form>
                 <br>
                 @if(session('success'))
@@ -66,6 +68,15 @@
           @else
           <h4>Da bi komentarisali morate da se ulogujete.</h4>
           @endif
+          <div hidden>
+          <form id="pform" action="{{ route("editComment", ['postId' => $singlePost->postId],['commentId' =>"2"]) }}" method="post">
+                  {{ csrf_field() }}
+                <div class="form-group">
+                  <textarea class="form-control" id="txta" rows="3" name="content1"></textarea>
+                </div>
+                <button type="submit" name="akcija" value="edit" class="btn btn-primary">Update</button>
+              </form>
+          </div>
 		  <!--// Comments Form -->
 		  
           <!-- Single Comment -->

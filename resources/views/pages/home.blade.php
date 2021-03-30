@@ -45,7 +45,7 @@
           <!-- Pagination -->
           <ul class="pagination justify-content-center mb-4">
             <li class="page-item">
-              {{ $users->links() }}
+            {{ $users->appends(['search' => request('search')])->links() }}
             </li>
           </ul>
         </div>

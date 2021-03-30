@@ -3,7 +3,7 @@
 Route::get('/','FrontendController@index');
 Route::get('/autor','FrontendController@autor');
 Route::get('/galerija','FrontendController@galerija');
-
+Route::get('/search', 'FrontendController@search')->name('search');
 
 Route::group(['middleware' => 'admin'], function() {
 
@@ -12,15 +12,19 @@ Route::group(['middleware' => 'admin'], function() {
 
 	Route::get('/users/{id?}', 'KorisnikController@show');
 	Route::post('/users/store', 'KorisnikController@store');
+	Route::get('/logs', 'FrontendController@showlogs');
+	Route::get('/flogs', 'DateRangeController@index');
 	Route::post('/users/update/{id}','KorisnikController@update');
 	Route::get('/users/destroy/{id}','KorisnikController@destroy');
 });
 
+Route::get('contact-us','ContactUsController@index');
+Route::post('contact-us','ContactUsController@handleForm');
 
 
-Route::get('/posts/{id?}', 'PostController@postshow');
+Route::get('/posts/{id?}', 'PostController@postshow')->middleware("user");
 Route::post('/posts/store', 'PostController@store');
-Route::post('/posts/update/{id}','PostController@update');
+Route::put('/posts/update/{id}','PostController@update');
 Route::get('/posts/destroy/{id}','PostController@destroy');
 
 
@@ -44,7 +48,8 @@ Route::get('/post/{id}','FrontendController@getPost');
     Rute za upravljanje komentarima
 */
 Route::post("/comments/{postId}", "CommentsController@postComment")->name("postComment");
-Route::post("/comments/{commentId}/edit", "CommentsController@editComment")->name("editComment");
+Route::post("/post/{postId}/comments/{commentId?}", "CommentsController@editComment")->name("editComment");
 Route::get("/comments/{commentId}/delete", "CommentsController@deleteComment")->name("deleteComment");
 
 Route::get('/download','FrontendController@download');
+
